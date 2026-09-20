@@ -56,6 +56,7 @@ in at least 4 of 5 tries.
 ---
 
 ## 4. Something about your chunks
+For all chunks, every chunk must have a character count of at least 100 and at most 300.
 
 <!-- YOU WRITE THIS ONE.
 
@@ -78,7 +79,7 @@ in at least 4 of 5 tries.
 ---
 
 ## 5. Your choice
-
+For at least 4 out of 5 test questions, the system's answer includes at least one example or alternative relevant to the question.
 <!-- YOU WRITE THIS ONE TOO.
 
      Pick something you actually care about getting right. It could be about

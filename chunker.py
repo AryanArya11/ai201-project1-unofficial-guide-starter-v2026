@@ -26,6 +26,7 @@ from dataclasses import dataclass
 
 import config
 from ingest import Document
+import re 
 
 
 @dataclass
@@ -97,7 +98,119 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
       - Would splitting on paragraph breaks keep more thoughts intact than
         splitting on a character count?
     """
-    return fallback_split(documents)
+
+    MAX_CHARS = 800
+    chunks: list[Chunk] = []
+
+    for doc in documents:
+        title = f"# {doc.source}"
+        headings = []
+        content = []
+        index = 0
+
+        def save_section():
+            nonlocal index
+
+            # Ignore sections without meaningful content.
+            if not content:
+                return
+
+            # Normalize whitespace, including unexpected blank lines
+            # inside sentences.
+            body = " ".join(" ".join(content).split())
+
+            if not body:
+                return
+
+            # Include the document title and active section headings.
+            prefix_parts = [title]
+            prefix_parts.extend(text for _, text in headings)
+            prefix = "\n".join(prefix_parts)
+
+            # Reserve space for the headings in every chunk.
+            available = max(1, MAX_CHARS - len(prefix) - 2)
+
+            remaining = body
+
+            while remaining:
+
+                # Keep the whole section when it fits.
+                if len(remaining) <= available:
+                    piece = remaining
+                    remaining = ""
+
+                else:
+                    # Prefer ending at a sentence boundary.
+                    cut = max(
+                        remaining.rfind(mark, 0, available + 1) + 1
+                        for mark in (". ", "? ", "! ")
+                    )
+
+                    # If no useful sentence boundary exists,
+                    # split at the nearest preceding word boundary.
+                    if cut < available // 2:
+                        cut = remaining.rfind(" ", 0, available + 1)
+
+                    # Handle an exceptionally long unbroken word.
+                    if cut <= 0:
+                        cut = available
+
+                    piece = remaining[:cut].strip()
+                    remaining = remaining[cut:].strip()
+
+                if not piece:
+                    continue
+
+                chunk_text = f"{prefix}\n\n{piece}"
+
+                chunks.append(
+                    Chunk(
+                        text=chunk_text,
+                        source=doc.source,
+                        index=index,
+                        produced_by="chunker.py::split_documents",
+                    )
+                )
+
+                index += 1
+
+        # Read the document line by line.
+        for line in doc.text.splitlines():
+            line = line.strip()
+
+            if not line:
+                continue
+
+            # Identify Markdown headings.
+            match = re.match(r"^(#{1,6})\s+(.+)$", line)
+
+            if match:
+                level = len(match.group(1))
+
+                # Finish the previous section before changing headings.
+                save_section()
+                content = []
+
+                if level == 1:
+                    # Store the document title.
+                    title = line
+                    headings = []
+
+                else:
+                    # Remove headings at the same or deeper level.
+                    while headings and headings[-1][0] >= level:
+                        headings.pop()
+
+                    headings.append((level, line))
+
+            else:
+                # Collect the content belonging to this section.
+                content.append(line)
+
+        # Save the final section of the document.
+        save_section()
+
+    return chunks
 
 
 def describe(chunks: list[Chunk]) -> str:

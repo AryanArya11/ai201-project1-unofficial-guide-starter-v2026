@@ -144,7 +144,10 @@ headings. I shared these results with AI and asked it to help me understand the 
 chunking strategy. After discussing the limitations of my approach, I decided to use Markdown headings to keep related 
 information together. I then prompted AI to help implement this strategy with an 800-character limit, prioritizing sentence 
 boundaries. This brought the total down to 94 chunks, and after inspecting five samples, I found that four contained enough 
-information to answer a question independently.
+information to answer a question independently. I also chose to set my chunk overlap to zero because my chunker already repeats 
+the document title and relevant section headings, which helps preserve context without duplicating the actual information 
+between chunks.
+
 
 **2. Fixing Retrieval & Grounding** 
 

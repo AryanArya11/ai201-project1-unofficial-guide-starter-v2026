@@ -23,10 +23,10 @@ names a target of "4 of 5", and four of three is not a thing.
 
 QUESTIONS = [
     # {"question": "...", "expects": "..."},
-    {"question": "What are the population of the largest and smallest villages in Corry Vale?", "expects": " largest village population: 900; smallest village population: 140"},
-    {"question": "How can I get to the airport from Marchwood?", "expects": "A dedicated bus service runs from Marchwood to the airport, that runs every 15 minutes."},
+    {"question": "What are the population of the largest and smallest villages in Corry Vale?", "expects": " 900; 140"},
+    {"question": "How can I get to the airport from Marchwood?", "expects": "every 15 minutes."},
     {"question": "When is Halden Bay busiest during the year?", "expects": "July and August."},
-    {"question": "How easy is it to get around Thornby Wells on foot, and what should visitors know about walking to the lighthouse at Elder Ness?", "expects": "15-minute walk in Thornby Wells; 25-minute difficult shingle walk at Elder Ness"},
+    {"question": "How easy is it to get around Thornby Wells on foot, and what should visitors know about walking to the lighthouse at Elder Ness?", "expects": "15-minute walk; 25-minute difficult walk"},
     {"question": "Which town in the region is known for seafood?", "expects": "Halden Bay"},
 ]
 

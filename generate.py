@@ -279,7 +279,11 @@ Rules:
 - Use only the information in the documents below. Do not use anything you know from elsewhere.
 - If the documents don't cover the question, say you don't have enough information. Do not guess.
 - Name the document your answer came from, using the filename given in each excerpt.
-- Be brief. Two or three sentences is usually enough."""
+- Be brief. Two or three sentences is usually enough.
+- Only include information supported by the retrieved documents. You may paraphrase or combine explicitly supported facts, but don't introduce any unsupported details or assumptions.
+- If the documents provide a general answer but do not support a specific detail in the question, please provide the supported information and clearly acknowledge what is missing.
+- Cite only the documents that directly support your answer. Do not cite unrelated retrieved documents.
+- If a question has multiple parts, answer only the parts that are covered by the documents. For any part that is not covered, clearly state which information is not covered."""
 
 
 def build_prompt(question: str, results) -> str:

@@ -26,7 +26,7 @@ QUESTIONS = [
     {"question": "What are the population of the largest and smallest villages in Corry Vale?", "expects": " largest village population: 900; smallest village population: 140"},
     {"question": "How can I get to the airport from Marchwood?", "expects": "A dedicated bus service runs from Marchwood to the airport, that runs every 15 minutes."},
     {"question": "When do students find Hayden Bay to be the busiest in the year?", "expects": "July and August."},
-    {"question": "What do students say about Thornsby Wells and Elder Ness Shingle walks?", "expects": "Thornsby Wells is a popular walk for students and is a nice one. Elder Ness Shingle is a less common walk, and is weather dependent."},
+    {"question": "How easy is it to get around Thornby Wells on foot, and what should visitors know about walking to the lighthouse at Elder Ness?", "expects": "15-minute walk in Thornby Wells; 25-minute difficult shingle walk at Elder Ness"},
     {"question": "Where do students go to eat when they're craving seafood?", "expects": "Halden Bay for seafood."},
 ]
 

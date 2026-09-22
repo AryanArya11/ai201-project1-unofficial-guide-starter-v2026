@@ -23,8 +23,10 @@ For at least 4 of my 5 test questions, the retrieved chunks include one that
 contains the answer.
 
 **Why this target:**
-<!-- e.g. "One of my questions is about a topic only two documents mention, so
-     I expect that one to be hard." -->
+Some of my questions require information from multiple documents, and I noticed that retrieval can prioritize one location over 
+another. For example, my question comparing Thornby Wells and Elder Ness initially missed important information because it 
+appeared in the sixth retrieved chunk. I want my system to consistently retrieve the information needed to answer most 
+questions, even when that information is spread across different documents.
 
 ---
 
@@ -33,9 +35,9 @@ contains the answer.
 Every answer the system produces names at least one source document.
 
 **Why this target:**
-<!-- Why all five and not four? What about your setup makes that achievable —
-     or what would have to go wrong for it not to be? -->
-
+My chunking strategy preserves the original document titles and source filenames, which allows the system to identify where its 
+information came from. Since my goal is to keep answers grounded in the documents, I expect every answer to include a source so 
+I can verify the information myself.
 ---
 
 ## 3. The relevance gate stops out-of-corpus questions
@@ -50,13 +52,16 @@ in at least 4 of 5 tries.
      just keep five of them, or the "4 of 5" above has nothing to be 4 of. -->
 
 **Why this target:**
-<!-- What did your distances look like when you set the cutoff in Milestone 4?
-     Was there a clean gap, or did the two groups overlap? -->
+When I tested my five answerable questions, their best distances ranged from 0.212 to 0.520, while my five out-of-scope 
+questions ranged from 0.8026 to 0.9753. Since there was a clear gap between the two groups, I chose a relevance cutoff of 0.66. 
+I want my system to consistently refuse questions outside the corpus, although I recognize that some unrelated questions could 
+still retrieve seemingly relevant information and fall below my cutoff.
 
 ---
 
-## 4. Something about your chunks
-For all chunks, every chunk must have a character count of at least 100 and at most 300.
+## 4. Chunks preserve useful information
+For at least 4 of my 5 sampled chunks, each chunk must contain between 100 and 800 characters and enough context to answer a 
+question independently, rather than containing only a heading or an incomplete thought.
 
 <!-- YOU WRITE THIS ONE.
 
@@ -74,25 +79,24 @@ For all chunks, every chunk must have a character count of at least 100 and at m
 
 **Why this target:**
 
-
+My initial paragraph-based approach produced 213 chunks, many of which lacked context or contained only headings. After 
+experimenting with different approaches, I decided to use Markdown sections with an 800-character limit to keep related 
+information together. I want to measure whether this approach produces chunks that contain enough useful information without 
+splitting important context across multiple chunks.
 
 ---
 
-## 5. Your choice
-For at least 4 out of 5 test questions, the system's answer includes at least one example or alternative relevant to the question.
-<!-- YOU WRITE THIS ONE TOO.
-
-     Pick something you actually care about getting right. It could be about
-     speed, about refusals, about a particular kind of question your corpus
-     handles badly, about source attribution being correct rather than merely
-     present — anything, as long as it names a number or an observable
-     outcome. -->
-
+## 5. Answers contain the information requested
+For at least 4 of my 5 test questions, the system's answer must include all the specific facts requested in the question, 
+rather than providing only a general or partial answer.
 
 
 **Why this target:**
 
-
+Some of my questions require multiple pieces of information, such as comparing the walking times in Thornby Wells and Elder 
+Ness or identifying the populations of two different villages. I want my system to retrieve and use all the necessary 
+information rather than returning an answer that only addresses part of the question. This would also allow me to evaluate 
+whether increasing TOP_K to 8 actually helps the system produce more complete answers.
 
 ---
 

@@ -21,16 +21,16 @@ Aryan Arya - "city_guides"
 
 ## What This Does
 
-<!-- Three or four sentences. Which corpus you picked, and the kinds of
-     questions your system answers. Write it for someone who has never seen
-     this repo.
+I tweaked a retrieval-augmented generation (RAG) system using the city_guides corpus to answer questions more effectively on
+information across the region about transportation and accommodations. The system works by splitting documents into sections
+based on Markdown headings and sentence boundaries, with an 800-character limit, and retrieves relevant information. With that 
+information, the system generates answers with citations and actual references to the original documents. Changes I
+specifically made include implementing a relevance cutoff of 0.66 to prevent the system from answering questions that fall
+outside the corpus. I also increased the number of retrieved chunks from 5 to 8 to improve answers that require information
+from multiple documents. My goal was to make the answers useful while ensuring they remain grounded in the information provided.
 
-     Milestone 5. -->
 
 ## Chunking Strategy
-
-**Chunk size:** 800 Characters
-**Overlap:** 0 characters
 
 **Chunk size:** 800 characters
 **Overlap:** 0 characters
@@ -44,14 +44,6 @@ The accessibility introduction still lacked useful details, but this approach ke
 
 ## Sample Chunks
 
-<!-- Five chunks, pasted as text. Label each one and name the file it came from
-     AND the function that produced it — the grader checks your code against
-     what you claim here.
-
-     `python app.py chunks -n 5` prints all three for you. Copy them straight
-     across.
-
-     Milestone 3. -->
 
 ======================================================================
 Chunk 1  |  source: guide_accessibility.md#0  |  produced by: chunker.py::split_documents
@@ -94,30 +86,45 @@ June and September for the beach without the crowds. July and August are busy an
 
 ## Sample Answer
 
-<!-- One complete question and answer, pasted as text, with the source line
-     visible. Milestone 4. -->
 
-**Question:**
+**Question:** How can I get to the airport from Marchwood?
 
 **Answer:**
 
+```text
+You can get to the airport from Marchwood by taking a dedicated bus that runs every 15 minutes.
+
+Source: guide_marchwood.md
 ```
-```
 
-**My relevance cutoff:**
+**My relevance cutoff:** 0.66
 
-<!-- The number you set in config.py, and how you got there.
+My five answerable questions had best distances between 0.212 and 0.520, while the five out-of-scope questions ranged from 0.8026 to 0.9753.
+I chose 0.66 because it falls within the gap between these two groups, allowing my system to answer relevant questions while
+refusing ones outside the corpus.
 
-     You ran five questions your corpus covers and the five in OUT_OF_SCOPE
-     that it clearly doesn't, and wrote down the best distance for each. What
-     did those two groups look like? Where was the gap? Put the actual numbers
-     here — the table below wants all ten rows.
 
-     Milestone 4. -->
+I initially used TOP_K = 5, but noticed that my question comparing Thornby Wells and Elder Ness was missing information about 
+Thornby Wells. After I increased TOP_K to 8, the missing information appeared in the sixth retrieved chunk, allowing the system 
+to finally answer both parts of the question.
+
+I also adjusted my grounding instructions after noticing that some questions were being interpreted too strictly. I then 
+drafted up ideas to polish the rules added GROUNDING_INSTRUCTIIONS of mine and stress-tested them with Claude and implemented them.
+After testing again, the system correctly answered my questions about Halden Bay and cited the relevant documents.
+
 
 | Question | In corpus? | Best distance |
 |---|---|---|
-|  |  |  |
+| What are the populations of the largest and smallest villages in Corry Vale? | Yes | 0.212 |
+| How can I get to the airport from Marchwood? | Yes | 0.4471 |
+| How easy is it to get around Thornby Wells on foot, and what should visitors know about walking to the lighthouse at Elder Ness? | Yes | 0.2917 |
+| When is Halden Bay busiest during the year? | Yes | 0.293 |
+| Which town in the region is known for seafood? | Yes | 0.520 |
+| What is the capital of Mongolia? | No | 0.8026 |
+| How do I change the oil in a diesel engine? | No | 0.8881 |
+| Who won the 1994 World Cup? | No | 0.9753 |
+| What is the recommended dosage of ibuprofen for a headache? | No | 0.8350 |
+| How do I write a for loop in Rust? | No | 0.8365 |
 
 ## How I Used AI
 
@@ -130,9 +137,28 @@ June and September for the beach without the crowds. July and August are busy an
 
      Milestone 5. -->
 
-**1.**
+**1. My Chunking Strategy** 
 
-**2.**
+I initially split my documents by paragraphs, but this produced 213 chunks, many of which lacked context or contained only 
+headings. I shared these results with AI and asked it to help me understand the different approaches I could take to improve my
+chunking strategy. After discussing the limitations of my approach, I decided to use Markdown headings to keep related 
+information together. I then prompted AI to help implement this strategy with an 800-character limit, prioritizing sentence 
+boundaries. This brought the total down to 94 chunks, and after inspecting five samples, I found that four contained enough 
+information to answer a question independently.
+
+**2. Fixing Retrieval & Grounding** 
+
+After getting some idea of retrieval through the README, this marked my first usecase of AI in which I used AI to help me understand how retrieval settings and grounding instructions could affect the answers my system generates. After testing my 
+questions, I noticed that TOP_K = 5 was missing information from Thornby Wells, which appeared in the sixth retrieved chunk. I 
+decided to increase TOP_K to 8 and tested the question again, allowing the system to retrieve the information needed to answer 
+both parts.
+
+I experimented a bit with the relevance cutoffs and I also shared my retrieval distances with Claude to help determine a reasonable relevance cutoff. Based on my results, I chose 0.66 to separate answerable questions from those outside the corpus; 
+I was able to reason for this cutoff so specifically since I graphed a series of cutoffs with Claude in which I tested testable 
+questions and out-of-scope questions to determine a suitable number. Also, I started noticing that my grounding instructions 
+were interpreting certain questions too strictly, I asked AI to help clarify how the model could combine supported facts 
+without introducing unsupported information. I adjusted the instructions and tested the questions again to confirm that the 
+answers remained grounded in the documents.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never

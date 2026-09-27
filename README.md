@@ -319,6 +319,13 @@ suggests (guide_elder_ness.md, guide_walking.md).
 
 ## Diagnoses
 
+I didn't miss any of the criteria during the baseline tests. However, criterion 1 was the closest to missing since retrieval only succeeded for exactly 4 out 5 questions, which met my target of 4/5, but still one missed.
+
+The question comparing Thornby Wells and Elder Ness was the only retrieval miss because my system successfully handled the other 4 questions just fine and I already was retrieving up to 8 chunks.
+I think my original target of 4/5 might have been a little low for this criterion. If I were to tighten this criterion, I would change the target to 5/5 questions having the the necessary info somewhere in the retrieved chunks.
+
+
+
 <!-- For each miss: which stage caused it, and how. The stage alone isn't
      enough — you need the mechanism.
 

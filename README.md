@@ -190,11 +190,107 @@ answers remained grounded in the documents.
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 4/5 | 4/5 | 4/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Chunks preserve useful information | 4 of 5 | 4/5 | 4/5 | 4/5 | MET |
+| 5. Answers contain the information requested | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+
+
+### Criterion 1 evidence
+
+Produced by: `check_retrieval.py`
+Checked by: `scorer.py::retrieval_hits`
+
+```text
+PASS | What are the population of the largest and smallest villages in Corry Vale?
+PASS | How can I get to the airport from Marchwood?
+PASS | When is Halden Bay busiest during the year?
+FAIL | How easy is it to get around Thornby Wells on foot, and what should visitors know about walking to the lighthouse at Elder Ness?
+PASS | Which town in the region is known for seafood?
+
+```
+
+### Criterion 2 evidence
+
+Produced by: `run_eval.py::main`
+
+```text
+To get to the airport from Marchwood, you can take a dedicated bus that
+is 20 minutes out and runs every 15 minutes (guide_marchwood.md).
+```
+
+### Criterion 3 evidence
+
+Produced by: `run_eval.py::check_out_of_scope`
+
+```text
+refused  (best distance 0.803)  What is the capital of Mongolia?
+refused  (best distance 0.888)  How do I change the oil in a diesel engine?
+refused  (best distance 0.975)  Who won the 1994 World Cup?
+refused  (best distance 0.835)  What is the recommended dosage of ibuprofen for a headache?
+refused  (best distance 0.836)  How do I write a for loop in Rust?
+-> gate refused 5 of 5
+```
+
+### Criterion 4 evidence
+
+Produced by: `chunker.py::split_documents`
+Printed by: `app.py chunks -n 5`
+
+
+***Note***: 4 of 5 chunks met the criterion. All five were between 100 and 800 characters, but Chunk 1 was too general to independently answer a specific question.
+
+Chunk 1  |  source: guide_accessibility.md#0  |  produced by: chunker.py::split_documents
+
+# Getting around the region with limited mobility
+
+An honest assessment rather than a promotional one. Some of these places are difficult and it is better to know in advance.
+
+
+Chunk 2  |  source: guide_corry_vale.md#5  |  produced by: chunker.py::split_documents
+
+# Corry Vale
+## Where to stay
+
+Perhaps thirty beds in the entire valley, spread across two pubs and a handful of farmhouse rooms. In summer these are booked months ahead. Camping is permitted on two marked fields and nowhere else.
+
+
+Chunk 3  |  source: guide_givens_mill.md#2  |  produced by: chunker.py::split_documents
+
+# Givens Mill
+## Getting around
+
+Everything is on one street along the river. The mill is at one end and the church at the other, eight minutes apart. The riverside path continues in both directions for as far as you want to walk.
+
+
+Chunk 4  |  source: guide_kestrelford.md#4  |  produced by: chunker.py::split_documents
+# Kestrelford
+## What to see
+
+The market square on a Saturday morning is the main event and has run continuously since the 1400s. The parish church has a 13th-century tower you can climb for £2. The old trackbed walk runs six miles to the next village along an easy gradient and is the best half-day here.
+
+Chunk 5  |  source: guide_pellew_sands.md#6  |  produced by: chunker.py::split_documents
+# Pellew Sands
+## When to go
+
+June and September for the beach without the crowds. July and August are busy and the town is at its most itself, for better and worse. Winter is bleak, largely closed, and has a following among people who like that sort of thing.
+
+
+### Criterion 5 evidence
+
+Produced by: `run_eval.py::main`
+
+```text
+Thornby Wells is flat and compact, taking 15 minutes to get around from
+end to end, with the pump room, gardens, and main shopping street all
+within three minutes of each other (guide_thornby_wells.md).
+
+For Elder Ness, visitors should know that the walk to the lighthouse takes
+25 minutes along the shingle, which is harder going than the distance
+suggests (guide_elder_ness.md, guide_walking.md).
+```
+
 
 <!-- Underneath, paste the REAL output for each criterion from one of your
      runs — the actual text your system produced, not a description of it.

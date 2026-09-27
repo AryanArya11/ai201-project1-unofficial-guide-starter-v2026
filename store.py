@@ -18,8 +18,12 @@ rest of the project if they were wrong:
 """
 
 import os
+import re
 import shutil
 from dataclasses import dataclass
+
+
+from rank_bm25 import BM25Okapi
 
 # Must be set BEFORE chromadb is imported. Without it, some Chroma versions
 # print "Failed to send telemetry event ..." on every single call — which looks
@@ -178,6 +182,55 @@ def build_index(
     return len(chunks)
 
 
+def _tokenize(text: str) -> list[str]:
+    """
+    Tokenizer for BM25.
+    Lowercases text and removes punctuation before matching words.
+    """
+
+    return re.findall(r"\b\w+\b", text.lower())
+
+def _hybrid_rerank(
+    question: str,
+    results: list[Result],
+    top_k: int,
+) -> list[Result]:
+    """
+    Combining the semantic ranking with BM25 keyword ranking.
+    Each chunk gets:
+        semantic rank + keyword rank
+
+    A lower combined rank is overall better.
+    """
+    bm25 = BM25Okapi([_tokenize(r.text) for r in results])
+    bm25_scores = bm25.get_scores(_tokenize(question))
+
+    # Indexes ordered from best BM25 match to worst.
+    bm25_order = sorted(
+        range(len(results)),
+        key=lambda i: bm25_scores[i],
+        reverse=True,
+    )
+
+    # Map each chunk index to its BM25 rank.
+    bm25_rank = {
+        index: rank
+        for rank, index in enumerate(bm25_order)
+    }
+
+    # results is already in semantic-search order,
+    # so its index is also its semantic rank.
+    combined = sorted(
+        enumerate(results),
+        key=lambda item: item[0] + bm25_rank[item[0]],
+    )
+
+    return [
+        result
+        for _, result in combined[:top_k]
+    ]
+
+
 def search(
     question: str,
     top_k: int | None = None,
@@ -185,10 +238,11 @@ def search(
     variant: str = "default",
 ) -> list[Result]:
     """
-    Retrieve the chunks closest in meaning to a question.
+    Retrieve semantically relevant chunks and rerank them using BM25.
 
-    Returns them nearest-first, each with its distance.
+    Each result keeps its original cosine distance.
     """
+
     top_k = top_k or config.TOP_K
     name = config.collection_name(corpus, variant)
 
@@ -201,7 +255,7 @@ def search(
 
     raw = collection.query(
         query_embeddings=embed([question]),
-        n_results=min(top_k, collection.count()),
+        n_results=min(top_k * 3, collection.count()),
     )
 
     results: list[Result] = []
@@ -217,8 +271,7 @@ def search(
                 produced_by=str(meta.get("produced_by", "unknown")),
             )
         )
-    return results
-
+    return _hybrid_rerank(question, results, top_k)
 
 def index_exists(corpus: str | None = None, variant: str = "default") -> bool:
     """Is there an index here to search, without searching it?

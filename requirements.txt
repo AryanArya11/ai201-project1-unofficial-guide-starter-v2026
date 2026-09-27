@@ -50,3 +50,4 @@ flask>=3.0,<3.2
 # behind. Installed now so unit 9 is a command, not a dependency problem.
 gunicorn>=23.0,<24.0
 rapidfuzz==3.14.6
+rank-bm25

@@ -172,21 +172,9 @@ answers remained grounded in the documents.
 
 # Unit 2
 
-<!-- These sections get ADDED to what's already above. Don't delete or rewrite
-     unit 1 — the point is that someone can see what you said before you knew
-     how it went. -->
 
 ## Run Log — Before
 
-<!-- Your five criteria, three runs each. `python run_eval.py --label before`
-     runs the questions, puts the OUT_OF_SCOPE ones through the gate, and
-     writes it all into results/ for you. Targets come from criteria.md; the
-     verdict column is your call.
-
-     Criterion 3 is measured in one deterministic pass rather than three, so
-     the same number goes in all three run columns. That's correct, not lazy.
-
-     Milestone 1. -->
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
@@ -292,22 +280,8 @@ suggests (guide_elder_ness.md, guide_walking.md).
 ```
 
 
-<!-- Underneath, paste the REAL output for each criterion from one of your
-     runs — the actual text your system produced, not a description of it.
-     Name the file and function that produced it. -->
-
 ## Verdicts
 
-
-
-<!-- MET or MISSED for each of the five, against the target you wrote last
-     unit — not a new one. Plus a sentence on how you decided. That sentence
-     matters most where it was close.
-
-     If your target said 4 of 5 and your runs came out 4, 3, 4, that's a MISS.
-     The target has to hold, not show up occasionally.
-
-     Milestone 2. -->
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
@@ -326,32 +300,20 @@ I think my original target of 4/5 might have been a little low for this criterio
 
 
 
-<!-- For each miss: which stage caused it, and how. The stage alone isn't
-     enough — you need the mechanism.
-
-     Not a diagnosis: "Question 3 didn't work."
-     A diagnosis:     "Question 3 asks about laundry costs. The answer is in
-                       one sentence that got split across two chunks, so
-                       neither chunk on its own contains it."
-
-     The five stages: loading → chunking → embedding → retrieval → generation.
-
-     Look for a pattern. If three misses all ask about numbers, that's one
-     problem, not three.
-
-     Missed nothing? Say so, then say honestly whether your targets were set
-     low, and which one you'd tighten and to what.
-
-     Milestone 3. -->
-
 ## The Improvement
 
 **What I changed:**
 
+
+What I ended up doing was adding BM25 keyword reranking after my existing semantic search. So originally, my system relied only on embedding similarity to rank the retrieved chunks. I kept semantic retrieval as the first stage, then ranked those retrieved chunks using both their semantic rank and BM25 keyword rank. I added the two rank positions together, and chunks with the lowest combined rank were returned.
+
+
 **Why I picked it:**
 
-<!-- Connect it to a specific diagnosis above in one sentence. If you can't,
-     you picked a fix because it sounded impressive. -->
+I picked it because my Criterion 1 was closest to missing, although the runs hit the 4/5 target, I wanted to prioritize getting all runs to pass (5/5) since I believe that in all of the retrieved chunks gathered at least one of them contains the answer per question.
+
+The question comparing Thornby Wells and Elder Ness was really the only miss, so I wanted to test whether combining semantic similarity with exact keyword matching would make questions dealing with more than one location more reliable.
+
 
 ### Run Log — After
 
@@ -360,13 +322,16 @@ I think my original target of 4/5 might have been a little low for this criterio
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 4/5 | 4/5 | 4/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Chunks preserve useful information | 4 of 5 | 4/5 | 4/5 | 4/5 | MET |
+| 5. Answers contain the information requested | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+
 
 **Did it help?**
+
+The BM25 reranking unfortunately didn't improve my Criterion 1, which remained at 4/5 questions. The Thornby Wells and Elder Ness question was still being marked as a retrieval miss. Interestingly enough, the actual generated answer still included both reqeusted pieces of information: Thornby Wells being a 15-minute walk end to end and the Elder Ness lighthouse being a 25-minute walk over difficult shingle. This suggests that BM25 reranking did not improve the measured retrieval score, even though the retrieved context was still sufficient for the model to answer the question correctly.
 
 <!-- Say plainly whether it did, and how you know. If it made things worse,
      say that — a change that backfired, honestly reported, earns full credit

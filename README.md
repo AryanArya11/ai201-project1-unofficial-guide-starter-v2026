@@ -298,6 +298,8 @@ suggests (guide_elder_ness.md, guide_walking.md).
 
 ## Verdicts
 
+
+
 <!-- MET or MISSED for each of the five, against the target you wrote last
      unit — not a new one. Plus a sentence on how you decided. That sentence
      matters most where it was close.
@@ -309,11 +311,11 @@ suggests (guide_elder_ness.md, guide_walking.md).
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | Retrieved chunks contain the answer | MET | My retrieval hits recorded a 4/5 in all three runs, which meets my criteria of at least 4 out 5. The only miss was the question comparing Thornby Wells and Elder Ness |
+| 2 | Every answer names a source | MET | All 5 answers named at least one source in all three runs, this meets my target for 5/5 |
+| 3 | The relevance gate stops out-of-corpus questions | MET | The relevance gate stopped all 5 out-of-scope questions, meeting my 4/5 target |
+| 4 | Chunks preserve useful info | MET | 4/5 of my sample chunks met the sizing and context requirements I set. The only sample that didn't have enough info to independently answer a question was the accessibility intro |
+| 5 | Answers contain the info requested | MET | All 5 answers contained the specific facts requested in the questions in all 3 runs, this met my 4/5 target |
 
 ## Diagnoses
 

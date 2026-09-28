@@ -333,26 +333,39 @@ The question comparing Thornby Wells and Elder Ness was really the only miss, so
 
 The BM25 reranking unfortunately didn't improve my Criterion 1, which remained at 4/5 questions. The Thornby Wells and Elder Ness question was still being marked as a retrieval miss. Interestingly enough, the actual generated answer still included both reqeusted pieces of information: Thornby Wells being a 15-minute walk end to end and the Elder Ness lighthouse being a 25-minute walk over difficult shingle. This suggests that BM25 reranking did not improve the measured retrieval score, even though the retrieved context was still sufficient for the model to answer the question correctly.
 
-<!-- Say plainly whether it did, and how you know. If it made things worse,
-     say that — a change that backfired, honestly reported, earns full credit
-     and is more interesting than one that worked. What matters is that you can
-     tell.
 
-     Milestone 4. -->
 
 ## What's Still Broken
 
-<!-- For each criterion still missed after your fix: what you'd do about it,
-     and why you stopped where you did.
 
-     "I ran out of time" is fine if it's true. Pretending nothing is left is
-     not.
+As of now, all five of my original criteria still met their targets after my improvement, so I did not have a criterion that completely failed.
 
-     Milestone 5. -->
+I would say the main issue that's still left is Criterion 1. Unforntunately, it stayed at 4/5 before and after adding BM25 reranking 😔. The Thornby Wells and Elder Ness question was still marked as a retrieval miss even though the retrieved sources included both `guide_thornby_wells.md` and `guide_elder_ness.md`, and the generated answer correctly included both the 15-minute walk through Thornby Wells and the 25-minute lighthouse walk over difficult shingle at Elder Ness.
+
+If I continued working on this, I think I would look wayy more closely at how my retrieval scorer handles multi-part expected answers. I would also experiment with letting BM25 search a bigger candidate pool instead of only reranking the chunks already returned by the semantic search.
+
+I stopped here because my original criteria were still being met and Milestone 4 asked me to make and measure one focused improvement rather than continue changing multiple parts of the pipeline.
+
+
+
+
+
 
 ## What I'd Do Differently
 
+Knowing what I know now, I would definitely make Criterion 1 stricter. Instead of requiring retrieval evidence for 4/5 questions, I would require all questions to succeed since this criterion honestly matters a lot for the system otherwise answers might not be properly backed by the system.
+
+The 4/5 target allowed the criterion to pass even though the same multi-part question consistently remained a retrieval miss. I would also think on rewriting the criterion to check whether the full retrieved set contains all of the info needed to answer every part of a question, rather than only checking for a single expected match.
+
+This would likely make the criterion better at testing questions like the Thornby Wells and Elder Ness example, where the information has to come from more than one document and the system has to account for multiple parts of the question.
 <!-- Knowing what you know now — which of your five criteria would you write
      differently, and why?
 
      Milestone 5. -->
+
+
+## How I used AI
+
+For Unit 2, I mainly used AI to help me understand and compare different evaluation and retrieval approaches. I specifically used it while experimenting with different fuzzy-matching methods for my scorer after lecture, and learning how BM25 could be combined with my existing semantic retrieval.
+
+I also found myself using AI to help reason through the Criterion 1 retrieval issue and identify possible stages of the pipeline that could be responsible. I still made the final decisions on my scorer threshold, criteria, BM25 implementation, and what improvement to test, then measured those changes using my own evaluation runs.

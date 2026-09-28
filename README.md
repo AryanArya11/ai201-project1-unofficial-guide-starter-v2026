@@ -369,3 +369,12 @@ This would likely make the criterion better at testing questions like the Thornb
 For Unit 2, I mainly used AI to help me understand and compare different evaluation and retrieval approaches. I specifically used it while experimenting with different fuzzy-matching methods for my scorer after lecture, and learning how BM25 could be combined with my existing semantic retrieval.
 
 I also found myself using AI to help reason through the Criterion 1 retrieval issue and identify possible stages of the pipeline that could be responsible. I still made the final decisions on my scorer threshold, criteria, BM25 implementation, and what improvement to test, then measured those changes using my own evaluation runs.
+
+
+## Stretch Improvement
+
+For my second measured improvement, I want to expand the candidate pool that BM25 is allowed to rerank.
+
+My first BM25 implementation only reranked the same top 8 chunks that semantic search had already returned. This meant BM25 could change their order, but it could not bring a potentially useful chunk into the final results if semantic search ranked it outside the top 8.
+
+For this second improvement, I will retrieve a larger semantic candidate pool and then use the same combined semantic and BM25 ranking to select the final top 8 chunks. I want to test whether giving BM25 more candidates improves Criterion 1, especially for the Thornby Wells and Elder Ness multi-part question.

@@ -222,7 +222,7 @@ def _hybrid_rerank(
     # so its index is also its semantic rank.
     combined = sorted(
         enumerate(results),
-        key=lambda item: item[0] + bm25_rank[item[0]],
+        key=lambda item: item[0] + (2 * bm25_rank[item[0]]),
     )
 
     return [

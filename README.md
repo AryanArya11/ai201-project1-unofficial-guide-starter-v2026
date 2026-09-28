@@ -373,8 +373,30 @@ I also found myself using AI to help reason through the Criterion 1 retrieval is
 
 ## Stretch Improvement
 
-For my second measured improvement, I want to expand the candidate pool that BM25 is allowed to rerank.
+For my second measured improvement, I wanted to test whether BM25 should have a little more influence on the final ranking.
 
-My first BM25 implementation only reranked the same top 8 chunks that semantic search had already returned. This meant BM25 could change their order, but it could not bring a potentially useful chunk into the final results if semantic search ranked it outside the top 8.
+Right now, my hybrid search treats the semantic rank and BM25 keyword rank equally. Since the Thornby Wells and Elder Ness question is the one that keeps giving me trouble and contains two very specific location names, I want to see whether giving the keyword ranking more weight helps those exact terms matter more.
 
-For this second improvement, I will retrieve a larger semantic candidate pool and then use the same combined semantic and BM25 ranking to select the final top 8 chunks. I want to test whether giving BM25 more candidates improves Criterion 1, especially for the Thornby Wells and Elder Ness multi-part question.
+For this improvement, I am going to keep the rest of the pipeline the same and only increase the weight of the BM25 rank when combining the two rankings. Then I will run the same evaluation again and compare the results.
+
+
+### Run Log — Stretch
+
+| Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
+|---|---|---|---|---|---|
+| 1. Retrieved chunk contains the answer | 4 of 5 | 4/5 | 4/5 | 4/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Chunks preserve useful information | 4 of 5 | 4/5 | 4/5 | 4/5 | MET |
+| 5. Answers contain the information requested | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+
+
+**Did the second improvement help?**
+
+Unfortunately, giving BM25 more weight did not improve Criterion 1 either. It still stayed at 4/5 across all three runs, with the Thornby Wells and Elder Ness question continuing to be marked as a retrieval miss.
+
+What I found interesting though is that the actual generated answers still had all of the information I wanted. Every run mentioned that Thornby Wells takes about 15 minutes to walk end to end and that the Elder Ness lighthouse walk takes about 25 minutes over difficult shingle.
+
+Because of this, I don't realy think simply increasing the weight of BM25 really fixed the underlying issue. At this point, I think the bigger problem is probably how my retrieval scorer handles multi-part expected answers, since the system is clearly retreiving enough context to answer the question correctly.
+
+The rest of my criteria stayed the same, so this second change did not improve or hurt my overall evaluation results.
